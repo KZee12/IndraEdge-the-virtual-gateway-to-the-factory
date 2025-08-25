@@ -106,12 +106,12 @@
             dashboardContext.strokeStyle = '#ffffff';
             dashboardContext.lineWidth = 12;
             
-            // Gauge (Made much larger)
+            // Gauge
             dashboardContext.beginPath();
             dashboardContext.arc(150, 120, 100, Math.PI, 0);
             dashboardContext.stroke();
             
-            // Gauge Needle (Made longer)
+            // Gauge Needle
             dashboardContext.save();
             dashboardContext.translate(150, 120);
             dashboardContext.rotate(Math.PI * -0.25);
@@ -121,9 +121,7 @@
             dashboardContext.stroke();
             dashboardContext.restore();
             
-            // Text Lines (Removed for clarity, focus on gauge/chart)
-            
-            // Bar Chart (Made much larger)
+            // Bar Chart
             dashboardContext.fillStyle = '#ffffff';
             dashboardContext.fillRect(320, 240, 50, -160);
             dashboardContext.fillRect(390, 240, 50, -110);
@@ -195,7 +193,7 @@
             button3.rotation.x = Math.PI / 2;
             group.add(button3);
 
-            // --- Power Button with Corrected Texture ---
+            // --- Power Button with Conventional Symbol ---
             const powerButtonCanvas = document.createElement('canvas');
             powerButtonCanvas.width = 128;
             powerButtonCanvas.height = 128;
@@ -207,21 +205,22 @@
             powerButtonContext.arc(64, 64, 60, 0, Math.PI * 2);
             powerButtonContext.fill();
             
-            // White power symbol (drawn upright)
+            // White power symbol (conventional)
             powerButtonContext.strokeStyle = '#ffffff';
-            powerButtonContext.lineWidth = 10;
-            // Circle part
+            powerButtonContext.lineWidth = 12;
+            
+            // Circle part with gap at the top
             powerButtonContext.beginPath();
             powerButtonContext.arc(64, 64, 40, Math.PI * 0.15, Math.PI * 1.85);
             powerButtonContext.stroke();
-            // Line part
+            
+            // Line part from center to top
             powerButtonContext.beginPath();
             powerButtonContext.moveTo(64, 24);
             powerButtonContext.lineTo(64, 64);
             powerButtonContext.stroke();
 
             const powerButtonTexture = new THREE.CanvasTexture(powerButtonCanvas);
-            // Ensure texture is not flipped
             powerButtonTexture.flipY = false; 
             const powerButtonMaterial = new THREE.MeshStandardMaterial({ map: powerButtonTexture, emissive: 0xaa0000, emissiveIntensity: 0.4 });
             const powerButtonGeometry = new THREE.CylinderGeometry(0.32, 0.32, 0.1, 32);
