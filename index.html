@@ -25,6 +25,7 @@
     <script>
         // Basic Scene Setup
         let scene, camera, renderer, controls;
+        let signalParticles;
 
         function init() {
             // Scene
@@ -101,32 +102,6 @@
             // Background
             dashboardContext.fillStyle = '#483d8b'; // Purple background
             dashboardContext.fillRect(0, 0, dashboardCanvas.width, dashboardCanvas.height);
-            
-            // Dashboard elements
-            dashboardContext.strokeStyle = '#ffffff';
-            dashboardContext.lineWidth = 12;
-            
-            // Gauge
-            dashboardContext.beginPath();
-            dashboardContext.arc(150, 120, 100, Math.PI, 0);
-            dashboardContext.stroke();
-            
-            // Gauge Needle
-            dashboardContext.save();
-            dashboardContext.translate(150, 120);
-            dashboardContext.rotate(Math.PI * -0.25);
-            dashboardContext.beginPath();
-            dashboardContext.moveTo(0, 0);
-            dashboardContext.lineTo(90, 0);
-            dashboardContext.stroke();
-            dashboardContext.restore();
-            
-            // Bar Chart
-            dashboardContext.fillStyle = '#ffffff';
-            dashboardContext.fillRect(320, 240, 50, -160);
-            dashboardContext.fillRect(390, 240, 50, -110);
-            dashboardContext.fillRect(460, 240, 50, -190);
-
 
             const dashboardTexture = new THREE.CanvasTexture(dashboardCanvas);
 
@@ -243,6 +218,50 @@
             const antennaStick = new THREE.Mesh(antennaStickGeo, antennaMaterial);
             antennaStick.position.y = 2.5;
             antennaBase.add(antennaStick);
+
+            // Antenna Signal Effect
+            // Create a canvas texture for spherical particles
+            const particleCanvas = document.createElement('canvas');
+            particleCanvas.width = 64;
+            particleCanvas.height = 64;
+            const particleContext = particleCanvas.getContext('2d');
+            const gradient = particleContext.createRadialGradient(32, 32, 0, 32, 32, 32);
+            gradient.addColorStop(0, 'rgba(255, 215, 0, 1)');   // Gold
+            gradient.addColorStop(0.2, 'rgba(255, 165, 0, 0.8)'); // Orange
+            gradient.addColorStop(0.4, 'rgba(255, 69, 0, 0.2)');  // Reddish-orange
+            gradient.addColorStop(1, 'rgba(255, 0, 0, 0)');      // Transparent
+            particleContext.fillStyle = gradient;
+            particleContext.fillRect(0, 0, 64, 64);
+            const particleTexture = new THREE.CanvasTexture(particleCanvas);
+
+            const particleCount = 70;
+            const particles = new THREE.BufferGeometry();
+            const positions = new Float32Array(particleCount * 3);
+            const material = new THREE.PointsMaterial({
+                map: particleTexture,
+                size: 0.4,
+                transparent: true,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
+            });
+
+            for (let i = 0; i < particleCount; i++) {
+                const theta = THREE.MathUtils.randFloat(0, Math.PI * 2);
+                const phi = THREE.MathUtils.randFloat(0, Math.PI * 2);
+                const radius = THREE.MathUtils.randFloat(0.7, 1.5);
+                
+                const x = radius * Math.sin(theta) * Math.cos(phi);
+                const y = radius * Math.cos(theta);
+                const z = radius * Math.sin(theta) * Math.sin(phi);
+
+                positions[i * 3] = x;
+                positions[i * 3 + 1] = y;
+                positions[i * 3 + 2] = z;
+            }
+            particles.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            signalParticles = new THREE.Points(particles, material);
+            signalParticles.position.set(0, 4.5, 0); // Position at the tip of the antenna stick
+            antennaBase.add(signalParticles);
             
             return group;
         }
@@ -258,6 +277,15 @@
         function animate() {
             requestAnimationFrame(animate);
             controls.update();
+
+            // Animate signal particles
+            if (signalParticles) {
+                signalParticles.rotation.y += 0.01;
+                const time = Date.now() * 0.002;
+                signalParticles.rotation.x = Math.sin(time * 0.7) * 0.2;
+                signalParticles.rotation.z = Math.cos(time * 0.3) * 0.2;
+            }
+
             renderer.render(scene, camera);
         }
 
@@ -265,4 +293,3 @@
     </script>
 </body>
 </html>
-
