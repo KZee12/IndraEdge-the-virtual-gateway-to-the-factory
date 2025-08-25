@@ -211,13 +211,13 @@
             
             // Circle part with gap at the top
             powerButtonContext.beginPath();
-            powerButtonContext.arc(64, 64, 40, Math.PI * 0.15, Math.PI * 1.85);
+            powerButtonContext.arc(64, 64, 40, Math.PI * -0.85, Math.PI * 0.85);
             powerButtonContext.stroke();
             
-            // Line part from center to top
+            // Line part flipped horizontally
             powerButtonContext.beginPath();
-            powerButtonContext.moveTo(64, 24);
-            powerButtonContext.lineTo(64, 64);
+            powerButtonContext.moveTo(64, 64); // Flipped line start (from the right)
+            powerButtonContext.lineTo(20, 64); // Line end (center)
             powerButtonContext.stroke();
 
             const powerButtonTexture = new THREE.CanvasTexture(powerButtonCanvas);
@@ -228,6 +228,7 @@
 
             powerButton.position.set(4, -3, 0.9);
             powerButton.rotation.x = Math.PI / 2;
+            powerButton.rotation.z = Math.PI; // Rotated 180 degrees
             group.add(powerButton);
 
 
